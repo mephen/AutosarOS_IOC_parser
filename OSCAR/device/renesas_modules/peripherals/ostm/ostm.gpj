@@ -1,4 +1,0 @@
-#!gbuild
-[Subproject]
-r_ostm.c
-r_ostm.h

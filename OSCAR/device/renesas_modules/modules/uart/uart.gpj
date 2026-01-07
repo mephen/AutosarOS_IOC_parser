@@ -1,4 +1,0 @@
-#!gbuild
-[Subproject]
-r_uart.c
-r_uart.h

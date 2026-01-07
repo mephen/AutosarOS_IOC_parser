@@ -1,4 +1,0 @@
-#!gbuild
-[Subproject]
-r_intc.c
-r_intc.h

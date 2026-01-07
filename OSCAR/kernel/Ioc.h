@@ -15,6 +15,8 @@
 #define IOC_RECEIVER_Q4_RCV1 13
 #define IOC_SEND_Q5_SND1 4
 #define IOC_RECEIVER_Q5_RCV1 14
+#define IOC_SEND_Q6_SND1 5
+#define IOC_RECEIVER_Q6_RCV1 15
 #define IOC_EMPTY 20
 
 /*
@@ -39,13 +41,14 @@ typedef struct IOCCB{
 
 #define POP 0
 #define PUSH 1
-#define IOCID_COUNT 5
+#define IOCID_COUNT 6
 
 #define Q1 0
 #define Q2 1
 #define Q3 2
 #define Q4 3
 #define Q5 4
+#define Q6 5
 /*mask*/
 extern IocAutosarType Ioc_channel_sender[IOCID_COUNT];
 extern IocAutosarType Ioc_channel_receiver[IOCID_COUNT];
@@ -77,6 +80,12 @@ struct IOC_Q5_struct{
     union{
         uint16 length_2;
         uint16* length_2_r;
+    };
+};
+struct IOC_Q6_struct{
+    union{
+        XXXType data_1;
+        XXXType* data_1_r;
     };
 };
 extern IOCCB icb[IOCID_COUNT];
@@ -129,5 +138,16 @@ Std_ReturnType SysIocWriteGroup_Q5_SND1(str*, str*, uint16);
 Std_ReturnType IocReadGroup_Q5_RCV1(str*, str*, uint16*);
 Std_ReturnType SysIocReadGroup_Q5_RCV1(str*, str*, uint16*);
 
+
+
+extern uint16 lock_Q6 ;
+extern uint8 buffer_Q6[20];
+extern ReceiverType receiver_Q6[1] ;
+Std_ReturnType IocSend_Q6_SND1(XXXType);
+Std_ReturnType SysIocSend_Q6_SND1(XXXType);
+Std_ReturnType IocReceive_Q6(XXXType*);
+Std_ReturnType SysIocReceive_Q6(XXXType*);
+Std_ReturnType IocEmptyQueue_Q6(void);
+Std_ReturnType SysIocEmptyQueue_Q6(void);
 
 #endif

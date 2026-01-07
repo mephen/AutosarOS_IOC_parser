@@ -1,4 +1,0 @@
-#!gbuild
-[Subproject]
-r_rlin.c
-r_rlin.h
