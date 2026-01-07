@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "memprot.h": "c",
+        "iodefine.h": "c",
+        "os_cfg.h": "c",
+        "spinlock_cfg.h": "c",
+        "counter.h": "c",
+        "event_cfg.h": "c",
+        "application_cfg.h": "c",
+        "scheduler.h": "c",
+        "task_cfg.h": "c"
+    }
+}
