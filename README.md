@@ -8,17 +8,4 @@
 5. OsIocReceivingOsApplicationRef 代表能呼叫生成的這一支 IocReceive 的 app，OsIocSendingOsApplicationRef 代表能呼叫生成的這一支 IocSend 的 app，依照需求調整 (app_lion / app2 / app3 / app4)，放一個就好。
 6. 如果希望所有 app 都能呼叫某一支 IOC API，就到 Ioc.c 中修改配置如下(每一行代表一個 OsIocCommunication 設定的 application 呼叫權限)。
 
-IocAutosarType Ioc_channel_sender[IOCID_COUNT] = {
-    0 | (1 << app_lion) | (1 << app2) | (1 << app3) | (1 << app4),
-    0 | (1 << app_lion) | (1 << app2) | (1 << app3) | (1 << app4),
-    0 | (1 << app_lion) | (1 << app2) | (1 << app3) | (1 << app4),
-    0 | (1 << app_lion) | (1 << app2) | (1 << app3) | (1 << app4),
-    0 | (1 << app_lion) | (1 << app2) | (1 << app3) | (1 << app4),
-};
-IocAutosarType Ioc_channel_receiver[IOCID_COUNT] = {
-    0 | (1 << app_lion) | (1 << app2) | (1 << app3) | (1 << app4),
-    0 | (1 << app_lion) | (1 << app2) | (1 << app3) | (1 << app4),
-    0 | (1 << app_lion) | (1 << app2) | (1 << app3) | (1 << app4),
-    0 | (1 << app_lion) | (1 << app2) | (1 << app3) | (1 << app4),
-    0 | (1 << app_lion) | (1 << app2) | (1 << app3) | (1 << app4),
-};
+![alt text](image.png)
