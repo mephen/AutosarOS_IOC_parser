@@ -63,11 +63,11 @@ Std_ReturnType IOC_API(int id, void *input_data, int flag)
         struct IOC_Q2_struct *d = (struct IOC_Q2_struct *)input_data;
         if (flag == IOC_SEND_Q2_SND1)
         {
-            return SysIocSend_Q2_SND1(d-> ptr_1);
+            return SysIocSend_Q2_SND1(d-> data_1);
         }
         if (flag == IOC_RECEIVER_Q2_RCV1)
         {
-            return SysIocReceive_Q2(d-> ptr_1);
+            return SysIocReceive_Q2(d-> data_1_r);
         }
         else if(flag == IOC_EMPTY)
         {
@@ -486,10 +486,10 @@ Std_ReturnType SysIocEmptyQueue_Q1(void)
 }
 #define OS_OSAPP_app_lion_START_SEC_CODE
 #include "OS_MemMap.h"
-Std_ReturnType IocSend_Q2_SND1(ClientServerInfoType* ptr_1)
+Std_ReturnType IocSend_Q2_SND1(ClientServerInfoType_test data_1)
 {
     struct IOC_Q2_struct d;
-    d.ptr_1 = ptr_1;
+    d.data_1 = data_1;
     SysServiceParaType para;
     para.serviceID = SERVICE_IOC;
     para.para1 = Q2; // ioc channel
@@ -506,7 +506,7 @@ Std_ReturnType IocSend_Q2_SND1(ClientServerInfoType* ptr_1)
 #define OS_OSAPP_app_lion_STOP_SEC_CODE
 #include "OS_MemMap.h"
 
-Std_ReturnType SysIocSend_Q2_SND1(ClientServerInfoType* ptr_1)
+Std_ReturnType SysIocSend_Q2_SND1(ClientServerInfoType_test data_1)
 {
     Std_ReturnType ret = IOC_E_OK;
 
@@ -518,25 +518,22 @@ Std_ReturnType SysIocSend_Q2_SND1(ClientServerInfoType* ptr_1)
     {
         GetLock(&lock_Q2, lock_bit);
         IOCCB *cb = &icb[Q2];
-        if (ret == IOC_E_OK)
+        int data_size = sizeof(ClientServerInfoType_test);
+        int remain_size = (cb->head - cb->tail + cb->length - 1) % cb->length;
+        if (data_size > remain_size)
         {
-            int data_size = sizeof(ClientServerInfoType);
-            int remain_size = (cb->head - cb->tail + cb->length - 1) % cb->length;
-            if (data_size > remain_size)
-            {
-                ret = IOC_E_LIMIT;
-                cb->lostFlag = 1;
-            }
+            ret = IOC_E_LOST_DATA;
         }
         if (ret == IOC_E_OK)
         {
-            memcpy_j(Q2, ptr_1, sizeof(ClientServerInfoType), PUSH);
-        }
-        if (ret == IOC_E_OK && icb[Q2].callbackFlag == 1)
-        {
-            for (int i = 0; i < cb->channel_receive_num; i++)
+            memcpy_j(Q2, &data_1, sizeof(ClientServerInfoType_test), PUSH);
+
+            if (ret == IOC_E_OK && icb[Q2].callbackFlag == 1)
             {
-                SetCallbackfunctionAction(cb->receiver[i].appID, cb->receiver[i].callback);
+                for (int i = 0; i < cb->channel_receive_num; i++)
+                {
+                    SetCallbackfunctionAction(cb->receiver[i].appID, cb->receiver[i].callback);
+                }
             }
         }
         ReleaseLock(&lock_Q2, lock_bit);
@@ -564,10 +561,10 @@ Std_ReturnType SysIocSend_Q2_SND1(ClientServerInfoType* ptr_1)
 
 #define OS_OSAPP_app2_START_SEC_CODE
 #include "OS_MemMap.h"
-Std_ReturnType IocReceive_Q2(ClientServerInfoType* ptr_1)
+Std_ReturnType IocReceive_Q2(ClientServerInfoType_test *data_1)
 {
     struct IOC_Q2_struct d;
-    d.ptr_1 = ptr_1;
+    d.data_1_r = data_1;
     SysServiceParaType para;
     para.serviceID = SERVICE_IOC;
     para.para1 = Q2; // ioc channel
@@ -588,7 +585,7 @@ void callback_Q2(void)
 
 #define OS_OSAPP_app2_STOP_SEC_CODE
 #include "OS_MemMap.h"
-Std_ReturnType SysIocReceive_Q2(ClientServerInfoType* ptr_1)
+Std_ReturnType SysIocReceive_Q2(ClientServerInfoType_test *data_1)
 {
     Std_ReturnType ret = IOC_E_OK;
     if (ret == IOC_E_OK && (~(SystemObjectAutosar[_CoreID]->IocAutosar_r[Q2].applicationsMask) & (1 << ExecutingApp[_CoreID])))
@@ -597,22 +594,24 @@ Std_ReturnType SysIocReceive_Q2(ClientServerInfoType* ptr_1)
     }
     if (ret == IOC_E_OK)
     {
-        GetLock(&lock_Q2, 1);
+        GetLock(&lock_Q2, lock_bit);
         IOCCB *cb = &icb[Q2];
-        if (cb->tail == cb->head)
+        int data_size = sizeof(ClientServerInfoType_test);
+        int stored_size = (cb->tail - cb->head + cb->length) % cb->length;
+        if (data_size > stored_size)
         {
-            ret = IOC_E_NO_DATA;
+            ret = IOC_E_LOST_DATA;
         }
         if (ret == IOC_E_OK)
         {
-            memcpy_j(Q2, ptr_1, sizeof(ClientServerInfoType), POP);
+            memcpy_j(Q2, data_1, sizeof(ClientServerInfoType_test), POP);
             if (cb->lostFlag == 1)
             {
                 cb->lostFlag = 0;
                 ret = IOC_E_LOST_DATA;
             }
         }
-        ReleaseLock(&lock_Q2, 1);
+        ReleaseLock(&lock_Q2, lock_bit);
     }
 #if (HOOK_ENABLE_ERRORHOOK == ENABLE)
 

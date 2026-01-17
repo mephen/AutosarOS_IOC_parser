@@ -59,7 +59,10 @@ struct IOC_Q1_struct{
     };
 };
 struct IOC_Q2_struct{
-    ClientServerInfoType* ptr_1;
+    union{
+        ClientServerInfoType_test data_1;
+        ClientServerInfoType_test* data_1_r;
+    };
 };
 struct IOC_Q3_struct{
     composite* ptr_1;
@@ -109,10 +112,10 @@ Std_ReturnType SysIocEmptyQueue_Q1(void);
 extern uint16 lock_Q2 ;
 extern uint8 buffer_Q2[20];
 extern ReceiverType receiver_Q2[1] ;
-Std_ReturnType IocSend_Q2_SND1(ClientServerInfoType*);
-Std_ReturnType SysIocSend_Q2_SND1(ClientServerInfoType*);
-Std_ReturnType IocReceive_Q2(ClientServerInfoType*);
-Std_ReturnType SysIocReceive_Q2(ClientServerInfoType*);
+Std_ReturnType IocSend_Q2_SND1(ClientServerInfoType_test);
+Std_ReturnType SysIocSend_Q2_SND1(ClientServerInfoType_test);
+Std_ReturnType IocReceive_Q2(ClientServerInfoType_test*);
+Std_ReturnType SysIocReceive_Q2(ClientServerInfoType_test*);
 Std_ReturnType IocEmptyQueue_Q2(void);
 Std_ReturnType SysIocEmptyQueue_Q2(void);
 
