@@ -1,0 +1,11 @@
+	EcucHardware EcucHardware {
+		EcucCoreDefinition EcucCoreDefinition0 {
+			EcucCoreId = 0
+		}
+		EcucCoreDefinition EcucCoreDefinition1 {
+			EcucCoreId = 1
+		}
+	}
+	T T {
+	}
+}
